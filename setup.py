@@ -38,8 +38,10 @@ setup(
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
 
-        'Natural Language :: Ukranian',
-        'Topic :: Text Processing',
+        'Natural Language :: Ukrainian',
+        'Topic :: Text Processing :: Linguistic',
+        'Topic :: Text Processing :: General',
+        'Topic :: Text Processing :: Indexing',
     ],
 
     keywords='ukrainian names translation transliteration',
