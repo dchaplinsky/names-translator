@@ -19,36 +19,32 @@ Usage
 
 .. code-block:: python
 
->>> from names_translator import Transliterator
-
->>> tr = Transliterator()
-
->>> tr.transliterate("Чаплинський", "Дмитро", "Олександрович")
-
-{"Chaplins'kij Dmitro Oleksandrovich",
- 'Chaplinski Dmitri Aleksandrovich',
- 'Chaplinskii Dimitry Aleksandrovich',
- 'Chaplinskii Dmitrii Aleksandrovich',
- 'Chaplinskii Dmitrii Alexandrovich',
- 'Chaplinskii Dmitry Aleksandrovich',
- 'Chaplinskij Dmitrij Aleksandrovich',
- 'Chaplinskiy Dmitriy Aleksandrovich',
- 'Chaplinsky Dmitry Aleksandrovich',
- "Chaplyns'cyi Dmytro Olecsandrovych",
- "Chaplyns'kyi Dmytro Oleksandrovych",
- "Chaplyns'kyj Dmytro Oleksandrovych",
- "Chaplyns'kyy Dmytro Oleksandrovych",
- 'Chaplynski Dmytro Oleksandrovych',
- 'Chaplynsky Dmytro Oleksandrovych',
- 'Chaplynskyi Dimitry Oleksandrovych',
- 'Chaplynskyi Dmitry Oleksandrovych',
- 'Chaplynskyi Dmytro Oleksandrovych',
- 'Chaplynskyi Dmytro Olexandrovych',
- 'Chaplȳnskȳĭ Dmȳtro Oleksandrovȳch',
- 'Tchaplynskyy Dmytro Oleksandrovytch',
- 'Tschaplynskyj Dmytro Oleksandrowytsch',
- "Čaplins'kij Dmitro Oleksandrovič",
- 'Čaplins′kij Dmitro Oleksandrovič',
- 'Čaplynsʹkyj Dmytro Oleksandrovyč',
- 'Чаплинский Дмитрий Александрович'}
- 
+    >>> from names_translator import Transliterator
+    >>> tr = Transliterator()
+    >>> tr.transliterate("Чаплинський", "Дмитро", "Олександрович")
+        {"Chaplins'kij Dmitro Oleksandrovich",
+         'Chaplinski Dmitri Aleksandrovich',
+         'Chaplinskii Dimitry Aleksandrovich',
+         'Chaplinskii Dmitrii Aleksandrovich',
+         'Chaplinskii Dmitrii Alexandrovich',
+         'Chaplinskii Dmitry Aleksandrovich',
+         'Chaplinskij Dmitrij Aleksandrovich',
+         'Chaplinskiy Dmitriy Aleksandrovich',
+         'Chaplinsky Dmitry Aleksandrovich',
+         "Chaplyns'cyi Dmytro Olecsandrovych",
+         "Chaplyns'kyi Dmytro Oleksandrovych",
+         "Chaplyns'kyj Dmytro Oleksandrovych",
+         "Chaplyns'kyy Dmytro Oleksandrovych",
+         'Chaplynski Dmytro Oleksandrovych',
+         'Chaplynsky Dmytro Oleksandrovych',
+         'Chaplynskyi Dimitry Oleksandrovych',
+         'Chaplynskyi Dmitry Oleksandrovych',
+         'Chaplynskyi Dmytro Oleksandrovych',
+         'Chaplynskyi Dmytro Olexandrovych',
+         'Chaplȳnskȳĭ Dmȳtro Oleksandrovȳch',
+         'Tchaplynskyy Dmytro Oleksandrovytch',
+         'Tschaplynskyj Dmytro Oleksandrowytsch',
+         "Čaplins'kij Dmitro Oleksandrovič",
+         'Čaplins′kij Dmitro Oleksandrovič',
+         'Čaplynsʹkyj Dmytro Oleksandrovyč',
+         'Чаплинский Дмитрий Александрович'}
