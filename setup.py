@@ -50,5 +50,8 @@ setup(
         'names_translator',
     ],
 
+    # data_files=[('names_translator/data', ['ua2ru.csv'])],
+    include_package_data=True,
+
     package_data={'': ['LICENSE']},
 )

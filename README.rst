@@ -1,5 +1,5 @@
 names-translator
-===========
+================
 
 That's a small tool to generate as many possible transliteration options for ukrainian names
 First it translates the name into russian using dictionary, then transliterates ukrainian and russian names
