@@ -4,10 +4,6 @@ import csv
 
 from string import capwords
 
-from translitua import (
-    translit, ALL_RUSSIAN, ALL_UKRAINIAN, UkrainianKMU, RussianInternationalPassport)
-
-
 def is_cyr(name):
     return re.search("[а-яіїєґ]+", name.lower(), re.UNICODE) is not None
 
@@ -65,10 +61,16 @@ class Transliterator(object):
                       person_last_name,
                       person_first_name,
                       person_patronymic,
+                      include_original_name=True,
                       translate_into_russian=True,
                       use_russian_transliteration=True,
                       use_ukrainian_transliteration=True,
                       use_heuristic_replacements=True):
+
+        from translitua import (
+            translit, ALL_RUSSIAN, ALL_UKRAINIAN, UkrainianKMU, RussianInternationalPassport)
+
+
         first_names = []
         last_names = []
         patronymics = []
@@ -78,6 +80,9 @@ class Transliterator(object):
         ]
 
         result = set()
+        if include_original_name:
+            for orig in original:
+                result.add(self.get_name(orig))
 
         if translate_into_russian:
             if (person_first_name.lower() in self.ru_translations and

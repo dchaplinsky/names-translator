@@ -47,4 +47,5 @@ Usage
          "Čaplins'kij Dmitro Oleksandrovič",
          'Čaplins′kij Dmitro Oleksandrovič',
          'Čaplynsʹkyj Dmytro Oleksandrovyč',
-         'Чаплинский Дмитрий Александрович'}
+         'Чаплинский Дмитрий Александрович',
+         'Чаплинський Дмитро Олександрович'}
