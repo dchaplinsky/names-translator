@@ -18,7 +18,7 @@ setup(
 
     version=names_translator.__version__,
 
-    description='Automatic translation and transliteration of ukrainian names into Russian and English',
+    description='Automatic translation and transliteration of ukrainian names into Russian and English + some extra tools to deal with mixed languages, etc',
     long_description=long_description,
 
     url='https://github.com/dchaplinsky/names-translator',
@@ -37,6 +37,8 @@ setup(
         'Programming Language :: Python :: Implementation :: PyPy',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
 
         'Natural Language :: Ukrainian',
         'Topic :: Text Processing :: Linguistic',
