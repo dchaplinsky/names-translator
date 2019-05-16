@@ -31,11 +31,12 @@ class Transliterator(object):
         "Євген": ["Eugene"],
         "Петро": ["Peter"],
         "Ірина": ["Irene"],
+        "Юрій": ["Youriy"],
     }
 
     special_replacements = {
-        "ий$": ["y", "i"],
-        "ий\s": ["y ", "i "],
+        "ий$": ["y", "i", "yy"],
+        "ий\s": ["y ", "i ", "yy "],
         "кс": ["x"],
     }
 
