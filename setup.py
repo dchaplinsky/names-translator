@@ -7,7 +7,7 @@ from os import path
 here = path.abspath(path.dirname(__file__))
 
 requirements = [
-    'translitua==1.3.0',
+    'translitua>=1.3.0',
 ]
 
 with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
