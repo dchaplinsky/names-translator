@@ -50,7 +50,7 @@ class Transliterator(object):
     def __init__(self, *args, **kwargs):
         self.ru_translations = {}
 
-        with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), "data/ua2ru.csv"), "r") as fp:
+        with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), "data/ua2ru.csv"), "r", encoding="utf8") as fp:
             r = csv.DictReader(fp)
             for l in r:
                 self.ru_translations[l["term"].lower()] = list(
