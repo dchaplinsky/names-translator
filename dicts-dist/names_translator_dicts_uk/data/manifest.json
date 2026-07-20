@@ -1,0 +1,65 @@
+{
+  "format_version": 1,
+  "names_translator_version": "2.1.0",
+  "options": {
+    "min_count": 1,
+    "max_variants_per_key": 5
+  },
+  "categories": {
+    "first": {
+      "sources": [
+        {
+          "file": "first_names_validated.csv",
+          "sha256": "5d5bb760b53cec24257e86256b3a5dd099516925b1458389a6c5ae25efe8dfb9"
+        }
+      ],
+      "rows_read": 11129,
+      "pairs_kept": 11129,
+      "unique_keys": 11001,
+      "rules": 2465,
+      "verbatim_rules": 0,
+      "dawg_size": 238088,
+      "dawg_sha256": "8daccb3fcb99666a2898938a0046b9d02feb9ec3f4ebba1b712549df5df4cd5b",
+      "rules_size": 64640,
+      "rules_sha256": "e32da5963eb7223c1c04f7876835c1e3a8083a798abbd1bbe0e1b15f66205de7"
+    },
+    "patronymic": {
+      "sources": [
+        {
+          "file": "patronymics_validated.csv",
+          "sha256": "740333dc1bd6a5131c8a7f9198f0b1e702762951e5ec62d5ad8ecefc7306ed8f"
+        }
+      ],
+      "rows_read": 17402,
+      "pairs_kept": 17402,
+      "unique_keys": 16901,
+      "rules": 3230,
+      "verbatim_rules": 0,
+      "dawg_size": 428552,
+      "dawg_sha256": "70b66ed0a557e0995f1bd9acca43f634a33b57e8c1278664da5bda38c07745c1",
+      "rules_size": 107223,
+      "rules_sha256": "088302dda17c8f09caac48ad52eb26ac683b4d3c45fe324121dc87b81c92b747"
+    },
+    "last": {
+      "sources": [
+        {
+          "file": "last_names_validated_top120k.csv",
+          "sha256": "a3e3c5452cf16aa5e5e7e602a69767297b64d0a37743784d17c3dba86239cc00"
+        },
+        {
+          "file": "last_names_rescued.csv",
+          "sha256": "031f23ddfcca695e1ac70e91a98dd174c1b03a9a018e7acc74f677a601b90705"
+        }
+      ],
+      "rows_read": 121211,
+      "pairs_kept": 119657,
+      "unique_keys": 118127,
+      "rules": 13969,
+      "verbatim_rules": 0,
+      "dawg_size": 1594376,
+      "dawg_sha256": "658d4b973e4be32ee3fe95cf411010985fb91152e9036bcd22fba2ca8d6f3b84",
+      "rules_size": 391318,
+      "rules_sha256": "37fdd491aef9b2d1174e78fcfde43eb3299c72213153518bac7249b1a8c9afb5"
+    }
+  }
+}
