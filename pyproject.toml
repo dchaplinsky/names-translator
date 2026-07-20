@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "names_translator"
+dynamic = ["version"]
+description = "Automatic translation and transliteration of Ukrainian names into Russian and English + some extra tools to deal with mixed languages, etc"
+readme = "README.rst"
+requires-python = ">=3.9"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+    {name = "dchaplinsky", email = "chaplinsky.dmitry@gmail.com"},
+]
+keywords = ["ukrainian", "names", "translation", "transliteration"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Natural Language :: Ukrainian",
+    "Natural Language :: Russian",
+    "Topic :: Text Processing :: Linguistic",
+    "Topic :: Text Processing :: General",
+    "Topic :: Text Processing :: Indexing",
+]
+dependencies = [
+    "translitua>=2.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "dawg2-python>=0.9"]
+fast = ["DAWG2>=0.13"]
+
+[project.urls]
+Homepage = "https://github.com/dchaplinsky/names-translator"
+
+[tool.setuptools]
+packages = ["names_translator"]
+
+[tool.setuptools.dynamic]
+version = {attr = "names_translator.__version__"}
+
+[tool.setuptools.package-data]
+names_translator = ["data/*.csv"]
+
+[tool.pytest.ini_options]
+filterwarnings = ["error"]

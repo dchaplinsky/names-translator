@@ -1,33 +1,42 @@
-import re
-from string import capwords
-from operator import itemgetter
+from __future__ import annotations
 
-from names_translator import Transliterator
+import re
+from operator import itemgetter
+from typing import Optional
+
 from translitua import translit, UkrainianKMU
 
+from .names_translator import Transliterator, is_cyr, is_ukr, title
+
+__all__ = [
+    "title",
+    "is_cyr",
+    "is_ukr",
+    "is_eng",
+    "is_greek",
+    "try_to_fix_mixed_charset",
+    "parse_fullname",
+    "generate_all_names",
+    "parse_and_generate",
+    "autocomplete_suggestions",
+    "concat_name",
+    "TRANSLITERATOR",
+]
+
+# Cheap to construct: the dictionary itself is loaded lazily on first lookup
 TRANSLITERATOR = Transliterator()
 
-
-def title(s):
-    chunks = s.split()
-    chunks = map(lambda x: capwords(x, "-"), chunks)
-    return " ".join(chunks)
+_ENG_RE = re.compile(r"[a-z]+")
+_GREEK_RE = re.compile(r"[α-ωίϊΐόάέύϋΰήώ]+")
+_NUMERIC_RE = re.compile(r"\d+\.?")
 
 
-def is_cyr(name):
-    return re.search("[а-яіїєґ]+", name.lower(), re.UNICODE) is not None
+def is_eng(name: str) -> bool:
+    return _ENG_RE.search(name.lower()) is not None
 
 
-def is_ukr(name):
-    return re.search("['іїєґ]+", name.lower(), re.UNICODE) is not None
-
-
-def is_eng(name):
-    return re.search("[a-z]+", name.lower(), re.UNICODE) is not None
-
-
-def is_greek(name):
-    return re.search("[α-ωίϊΐόάέύϋΰήώ]+", name.lower(), re.UNICODE) is not None
+def is_greek(name: str) -> bool:
+    return _GREEK_RE.search(name.lower()) is not None
 
 
 C2E = (
@@ -59,7 +68,7 @@ E2C_TRANS = str.maketrans(
 )
 
 
-def try_to_fix_mixed_charset(name):
+def try_to_fix_mixed_charset(name: str) -> str:
     if is_cyr(name) and is_eng(name):
         name_cyr = name.translate(E2C_TRANS)
 
@@ -73,24 +82,28 @@ def try_to_fix_mixed_charset(name):
     return name
 
 
-def parse_fullname(person_name):
-    # Extra care for initials (especialy those without space)
+def parse_fullname(person_name: str) -> tuple[str, str, str, str]:
+    # Extra care for initials (especially those without space)
     person_name = re.sub(
         r"\s+", " ", person_name.replace(".", ". ").replace("\xa0", " ")
     )
-
-    chunks = person_name.strip().split(" ")
 
     last_name = ""
     first_name = ""
     patronymic = ""
     dob = ""
 
-    numeric_chunks = list(filter(lambda x: re.search(r"\d+\.?", x), chunks))
+    chunks = []
+    numeric_chunks = []
+    for chunk in person_name.strip().split(" "):
+        if _NUMERIC_RE.search(chunk):
+            numeric_chunks.append(chunk)
+        else:
+            chunks.append(chunk)
 
-    chunks = list(filter(lambda x: re.search(r"\d+\.?", x) is None, chunks))
-
-    if len(chunks) == 2:
+    if len(chunks) == 1:
+        last_name = title(chunks[0])
+    elif len(chunks) == 2:
         last_name = title(chunks[0])
         first_name = title(chunks[1])
     elif len(chunks) > 2:
@@ -104,7 +117,9 @@ def parse_fullname(person_name):
     return last_name, first_name, patronymic, dob
 
 
-def generate_all_names(l, f, p, position=None):
+def generate_all_names(
+    l: str, f: str, p: str, position: Optional[str] = None
+) -> set[str]:
     res = set()
     for tr_name in TRANSLITERATOR.transliterate(l, f, p):
         if position is None:
@@ -115,14 +130,14 @@ def generate_all_names(l, f, p, position=None):
     return res
 
 
-def parse_and_generate(name, position=None):
+def parse_and_generate(name: str, position: Optional[str] = None) -> set[str]:
     l, f, p, _ = parse_fullname(name)
     return generate_all_names(l, f, p, position)
 
 
-def autocomplete_suggestions(name):
+def autocomplete_suggestions(name: str) -> set[str]:
     return {title(name), translit(title(name), UkrainianKMU)}
 
 
-def concat_name(*args):
+def concat_name(*args: str) -> str:
     return " ".join(filter(None, args))
