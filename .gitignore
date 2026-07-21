@@ -58,3 +58,8 @@ target/
 *.sublime-project
 *.sublime-workspace
 venv/
+
+# Local dictionary experiments and source dumps (not for distribution)
+names_translator/__snippets/
+new dicts/
+.venv/

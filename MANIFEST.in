@@ -1,9 +1,8 @@
-include LICENSE
-include README.rst
-recursive-include names_translator/data *
+recursive-include tests *.py *.json
 
-recursive-include tests *
+prune names_translator/__snippets
+prune dicts-dist
+prune tools
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
-
-recursive-include docs *.rst conf.py Makefile make.bat *.jpg *.png *.gif
+recursive-exclude * .DS_Store

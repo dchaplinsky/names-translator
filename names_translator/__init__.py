@@ -1,3 +1,3 @@
-__version__ = '1.2.3'
+__version__ = "2.1.0"
 
 from .names_translator import *
