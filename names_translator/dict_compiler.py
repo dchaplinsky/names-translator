@@ -1,7 +1,10 @@
-"""Compile validated uk->ru name CSVs into per-category DAWG dictionaries.
+"""Compile validated uk->ru name CSVs into per-pool DAWG dictionaries.
 
-Input CSVs must have columns: uk, ru, count. Multiple files per category are
-merged; duplicate (uk, ru) pairs get their counts summed. The storage format
+Input CSVs must have columns: uk, ru, count. Multiple files per pool are
+merged; duplicate (uk, ru) pairs get their counts summed. Counts are
+relative ranking weights, not necessarily corpus frequencies — e.g. the
+bundled data-src/legacy_ua2ru.csv uses synthetic 2/1 weights that encode
+primary/alternative order (so beware --min-count on it). The storage format
 (record layout and rule encoding) is owned by names_translator.dicts — see
 FORMAT_VERSION, RECORD_FORMAT and make_rule there.
 
@@ -10,11 +13,11 @@ Building requires the DAWG2 package (C extension, e.g. via
 pure-python dawg2-python.
 
 Usage:
-    python -m names_translator.dict_compiler \
-        --first first_names_validated.csv \
-        --last last_names_validated.csv last_names_rescued.csv \
-        --patronymic patronymics_validated.csv \
-        --out-dir dicts-dist/names_translator_dicts_uk/data
+    python -m names_translator.dict_compiler --<pool> input.csv [...] \
+        --out-dir names_translator/data
+
+The canonical recipe for rebuilding the bundled data lives in
+data-src/README.md in the source repository.
 """
 
 from __future__ import annotations
@@ -28,7 +31,7 @@ from collections import defaultdict
 
 from . import __version__
 from ._text import normalize_key
-from .dicts import CATEGORIES, FORMAT_VERSION, MAX_RANK, MAX_RULES, RECORD_FORMAT, make_rule
+from .dicts import FORMAT_VERSION, MAX_RANK, MAX_RULES, POOLS, RECORD_FORMAT, make_rule
 
 
 def sha256_file(path: str) -> str:
@@ -106,12 +109,12 @@ def compile_category(
 
 
 def compile_dicts(
-    categories: dict[str, list[str]],
+    pools: dict[str, list[str]],
     out_dir: str,
     min_count: int = 1,
     max_variants: int = 5,
 ) -> dict:
-    """Compile all given categories and write the manifest; returns it."""
+    """Compile all given pools and write the manifest; returns it."""
     os.makedirs(out_dir, exist_ok=True)
 
     manifest = {
@@ -122,8 +125,8 @@ def compile_dicts(
             "max_variants_per_key": max_variants,
         },
         "categories": {
-            category: compile_category(paths, out_dir, category, min_count, max_variants)
-            for category, paths in categories.items()
+            pool: compile_category(paths, out_dir, pool, min_count, max_variants)
+            for pool, paths in pools.items()
             if paths
         },
     }
@@ -136,9 +139,9 @@ def compile_dicts(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    for category in CATEGORIES:
+    for pool in POOLS:
         parser.add_argument(
-            "--%s" % category, nargs="+", default=[], help="%s names CSVs" % category
+            "--%s" % pool, nargs="+", default=[], help="%s names CSVs" % pool
         )
     parser.add_argument("--out-dir", required=True)
     parser.add_argument("--min-count", type=int, default=1)
@@ -148,12 +151,12 @@ def main() -> None:
     if args.max_variants_per_key > MAX_RANK + 1:
         parser.error("--max-variants-per-key cannot exceed %d" % (MAX_RANK + 1))
 
-    categories = {category: getattr(args, category) for category in CATEGORIES}
-    if not any(categories.values()):
+    pools = {pool: getattr(args, pool) for pool in POOLS}
+    if not any(pools.values()):
         parser.error("no input files given")
 
     manifest = compile_dicts(
-        categories, args.out_dir, args.min_count, args.max_variants_per_key
+        pools, args.out_dir, args.min_count, args.max_variants_per_key
     )
 
     for category, stats in manifest["categories"].items():

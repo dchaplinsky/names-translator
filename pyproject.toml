@@ -34,10 +34,11 @@ classifiers = [
 ]
 dependencies = [
     "translitua>=2.0",
+    "dawg2-python>=0.9",
 ]
 
 [project.optional-dependencies]
-dev = ["pytest", "dawg2-python>=0.9"]
+dev = ["pytest"]
 fast = ["DAWG2>=0.13"]
 
 [project.urls]
@@ -50,7 +51,7 @@ packages = ["names_translator"]
 version = {attr = "names_translator.__version__"}
 
 [tool.setuptools.package-data]
-names_translator = ["data/*.csv"]
+names_translator = ["data/*.dawg", "data/*.rules.json", "data/manifest.json"]
 
 [tool.pytest.ini_options]
 filterwarnings = ["error"]

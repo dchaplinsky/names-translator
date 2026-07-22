@@ -92,11 +92,11 @@ def test_parse_and_generate():
 
 
 def test_import_does_not_load_dictionary():
-    """Importing name_utils must not read the dictionary; the first lookup does."""
+    """Importing name_utils must not load any DAWG; the first lookup does."""
     code = (
         "import names_translator.name_utils as nu; "
-        "assert nu.TRANSLITERATOR._ru_translations is None; "
-        "nu.TRANSLITERATOR.ru_translations; "
-        "assert nu.TRANSLITERATOR._ru_translations is not None"
+        "assert not nu.TRANSLITERATOR._dicts._loaded; "
+        "nu.TRANSLITERATOR.transliterate('Чаплинський', 'Дмитро', ''); "
+        "assert nu.TRANSLITERATOR._dicts._loaded"
     )
     subprocess.run([sys.executable, "-c", code], check=True)

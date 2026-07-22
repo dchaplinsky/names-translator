@@ -9,7 +9,7 @@ dawg modes load compiled dictionaries via names_translator.dicts.NameDicts
 Usage:
     python tools/bench_dict_vs_dawg.py \
         --csv first.csv last.csv patronymics.csv \
-        --dicts-dir dicts-dist/names_translator_dicts_uk/data
+        --dicts-dir names_translator/data
 """
 
 from __future__ import annotations

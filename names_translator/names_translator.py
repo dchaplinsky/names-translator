@@ -1,10 +1,7 @@
 from __future__ import annotations
 
 import re
-import csv
 
-from functools import cache
-from importlib import resources
 from typing import Callable, Iterable, Optional
 
 from translitua import (
@@ -16,7 +13,7 @@ from translitua import (
 )
 
 from ._text import is_cyr, is_ukr, normalize_key, replace_apostrophes, title
-from .dicts import NameDicts, default_dicts
+from .dicts import LEGACY, NameDicts, default_dicts
 
 __all__ = [
     "is_cyr",
@@ -26,22 +23,6 @@ __all__ = [
     "normalize_key",
     "Transliterator",
 ]
-
-
-@cache
-def _load_legacy_translations() -> dict[str, list[str]]:
-    # Process-wide, like the compiled dictionaries: parsed at most once
-    translations = {}
-
-    with resources.files("names_translator").joinpath("data/ua2ru.csv").open(
-        "r", encoding="utf8"
-    ) as fp:
-        for l in csv.DictReader(fp):
-            translations[normalize_key(l["term"])] = list(
-                filter(None, [l["translation"], l["alt_translation"]])
-            )
-
-    return translations
 
 
 class Transliterator:
@@ -65,14 +46,12 @@ class Transliterator:
     def __init__(self, dicts: Optional[NameDicts] = None) -> None:
         # Dictionaries are loaded on first lookup, not on construction,
         # so that importing/instantiating stays cheap
-        self._ru_translations: Optional[dict[str, list[str]]] = None
         self._dicts = dicts if dicts is not None else default_dicts()
 
     @property
     def ru_translations(self) -> dict[str, list[str]]:
-        if self._ru_translations is None:
-            self._ru_translations = _load_legacy_translations()
-        return self._ru_translations
+        # Backward-compatible view of the legacy pool; as_dict memoizes
+        return self._dicts.as_dict(LEGACY)
 
     def get_name(self, name_tuple: Iterable[str]) -> str:
         return " ".join(name_tuple).strip().replace("  ", " ")
@@ -87,16 +66,8 @@ class Transliterator:
         if not is_cyr(chunk):
             return [chunk]
 
-        key = normalize_key(chunk)
-
-        # Compiled per-category dictionaries (when installed) win over the
-        # legacy ua2ru.csv, which stays as a coverage-preserving fallback
-        if self._dicts.available:
-            translations = self._dicts.lookup_key(key, category)
-            if translations:
-                return translations
-
-        return self.ru_translations.get(key, [chunk])
+        # Category pools first, then the general legacy pool (inside lookup_key)
+        return self._dicts.lookup_key(normalize_key(chunk), category) or [chunk]
 
     def _add_transliterations(
         self,

@@ -5,12 +5,20 @@ import pytest
 from names_translator import is_cyr, is_ukr, normalize_key
 
 
-def test_golden_chaplinsky(tr, golden):
-    """Default behavior is locked to the output captured before the 2.0 refactoring."""
-    assert tr.transliterate("Чаплинський", "Дмитро", "Олександрович") == golden
+def test_golden_chaplinsky_legacy(tr_legacy, golden):
+    """Legacy-pool-only behavior is locked to the pre-2.0 output."""
+    assert tr_legacy.transliterate("Чаплинський", "Дмитро", "Олександрович") == golden
 
 
-def test_readme_example_matches_golden(golden):
+def test_golden_chaplinsky_default(tr, golden_default):
+    """Out-of-the-box behavior with the bundled dictionaries."""
+    assert (
+        tr.transliterate("Чаплинський", "Дмитро", "Олександрович")
+        == golden_default
+    )
+
+
+def test_readme_example_matches_golden(golden_default):
     """The usage example in README.rst must not drift from the golden fixture."""
     readme = os.path.join(os.path.dirname(__file__), os.pardir, "README.rst")
 
@@ -23,7 +31,7 @@ def test_readme_example_matches_golden(golden):
                 if len(item) > 1 and item[0] == item[-1] and item[0] in "'\"":
                     names.add(item[1:-1])
 
-    assert names == golden
+    assert names == golden_default
 
 
 def test_include_original_name(tr):

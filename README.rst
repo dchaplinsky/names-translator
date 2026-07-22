@@ -14,21 +14,14 @@ Install from PyPI.
 
     $ pip install names_translator
 
-Bigger dictionaries
+Dictionaries
 ==================================
 
-The bundled ``ua2ru.csv`` covers ~19k names. For much better coverage install
-the optional data package: ~146k validated first names, last names and
-patronymics with ranked Russian translations, compiled into DAWG dictionaries
-(the pymorphy3 approach):
-
-.. code-block:: bash
-
-    $ pip install names-translator-dicts-uk
-
-``names_translator`` discovers it automatically and prefers it over the
-legacy dictionary, which remains as a fallback for uncovered names. Ranked
-lookups are also available directly:
+The package bundles compiled DAWG dictionaries (the pymorphy3 approach):
+~146k validated first names, last names and patronymics with ranked Russian
+translations, plus a legacy pool of ~19k names from the historical ua2ru
+dictionary used as a fallback for names the validated data does not cover.
+Everything works out of the box; ranked lookups are also available directly:
 
 .. code-block:: python
 
@@ -56,16 +49,45 @@ Usage
     >>> tr.transliterate("Чаплинський", "Дмитро", "Олександрович")
         {"Chaplins'kij Dmitro Oleksandrovich",
          'Chaplinski Dmitri Aleksandrovich',
+         'Chaplinski Dmitri Oleksandrovich',
+         'Chaplinski Dmitro Aleksandrovich',
+         'Chaplinski Dmitro Oleksandrovich',
          'Chaplinskii Dmitrii Aleksandrovich',
+         'Chaplinskii Dmitrii Oleksandrovich',
+         'Chaplinskii Dmitro Aleksandrovich',
+         'Chaplinskii Dmitro Oleksandrovich',
          'Chaplinskij Dmitrij Aleksandrovich',
+         'Chaplinskij Dmitrij Oleksandrovich',
+         'Chaplinskij Dmitro Aleksandrovich',
+         'Chaplinskij Dmitro Oleksandrovich',
          'Chaplinskijj Dmitrijj Aleksandrovich',
+         'Chaplinskijj Dmitrijj Oleksandrovich',
+         'Chaplinskijj Dmitro Aleksandrovich',
+         'Chaplinskijj Dmitro Oleksandrovich',
          'Chaplinskiy Dimitry Aleksandrovich',
+         'Chaplinskiy Dimitry Oleksandrovich',
          'Chaplinskiy Dmitriy Aleksandrovich',
          'Chaplinskiy Dmitriy Alexandrovich',
+         'Chaplinskiy Dmitriy Oleksandrovich',
+         'Chaplinskiy Dmitriy Olexandrovich',
+         'Chaplinskiy Dmitro Aleksandrovich',
+         'Chaplinskiy Dmitro Alexandrovich',
+         'Chaplinskiy Dmitro Oleksandrovich',
+         'Chaplinskiy Dmitro Olexandrovich',
          'Chaplinskiy Dmitry Aleksandrovich',
+         'Chaplinskiy Dmitry Oleksandrovich',
          'Chaplinskiĭ Dmitriĭ Aleksandrovich',
+         'Chaplinskiĭ Dmitriĭ Oleksandrovich',
+         'Chaplinskiĭ Dmitro Aleksandrovich',
+         'Chaplinskiĭ Dmitro Oleksandrovich',
+         'Chaplinsky Dmitro Aleksandrovich',
+         'Chaplinsky Dmitro Oleksandrovich',
          'Chaplinsky Dmitry Aleksandrovich',
+         'Chaplinsky Dmitry Oleksandrovich',
+         'Chaplinskyy Dmitro Aleksandrovich',
+         'Chaplinskyy Dmitro Oleksandrovich',
          'Chaplinskyy Dmitryy Aleksandrovich',
+         'Chaplinskyy Dmitryy Oleksandrovich',
          "Chaplyns'cyi Dmytro Olecsandrovych",
          "Chaplyns'kyi Dmytro Oleksandrovych",
          "Chaplyns'kyj Dmytro Oleksandrovych",
@@ -84,8 +106,14 @@ Usage
          'Tschaplynskyj Dmytro Oleksandrowytsch',
          "Čaplins'kij Dmitro Oleksandrovič",
          'Čaplinskij Dmitrij Aleksandrovič',
+         'Čaplinskij Dmitrij Oleksandrovič',
+         'Čaplinskij Dmitro Aleksandrovič',
+         'Čaplinskij Dmitro Oleksandrovič',
          'Čaplins′kij Dmitro Oleksandrovič',
          'Čaplynsjkyj Dmytro Oleksandrovyč',
          'Čaplynsʹkyj Dmytro Oleksandrovyč',
          'Чаплинский Дмитрий Александрович',
+         'Чаплинский Дмитрий Олександрович',
+         'Чаплинский Дмитро Александрович',
+         'Чаплинский Дмитро Олександрович',
          'Чаплинський Дмитро Олександрович'}
