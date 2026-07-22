@@ -114,8 +114,15 @@ def test_transliterator_uses_compiled_dicts(tr_dicts):
     assert "Пятница Олександр" in res
 
 
-def test_transliterator_falls_back_to_legacy_csv(tr_dicts):
-    # П'ятчанін is not in the compiled fixture but is in the bundled ua2ru.csv
-    res = tr_dicts.transliterate("П'ятчанін", "Олександр", "")
+def test_default_data_falls_back_to_legacy_pool(tr):
+    # П'ятчанін is not in the category dictionaries but is in the bundled
+    # legacy pool compiled from the historical ua2ru data
+    res = tr.transliterate("П'ятчанін", "Олександр", "")
 
     assert any("Пьятчанин Александр" in name for name in res)
+
+
+def test_as_dict_legacy_pool():
+    legacy = NameDicts().as_dict("legacy")
+    assert legacy["п'ятчанін"] == ["Пьятчанин"]
+    assert len(legacy) > 19_000

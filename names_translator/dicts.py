@@ -3,21 +3,35 @@ from __future__ import annotations
 import json
 import os
 from functools import cache, cached_property
+from importlib import resources
 from typing import Optional
 
 from ._text import normalize_key, title
 
-__all__ = ["CATEGORIES", "FORMAT_VERSION", "NameDicts", "default_dicts"]
+__all__ = [
+    "CATEGORIES",
+    "FORMAT_VERSION",
+    "LEGACY",
+    "POOLS",
+    "NameDicts",
+    "default_dicts",
+]
 
 # Also the lookup order when no category is given: a bare name is more
 # likely a first name or patronymic than one of ~120k last names
 CATEGORIES = ("first", "patronymic", "last")
 
+# General pool compiled from the historical ua2ru dictionary (no category
+# information); consulted only when the category dictionaries have no match
+LEGACY = "legacy"
+
+POOLS = CATEGORIES + (LEGACY,)
+
 # Storage format, shared with the compiler (names_translator.dict_compiler):
-# <category>.dawg is a RecordDAWG(">BH") keyed by the normalized ukrainian
+# <pool>.dawg is a RecordDAWG(">BH") keyed by the normalized ukrainian
 # name with (rank, rule_id) records — rank 0 is the most frequent variant,
 # and the DAWG returns a key's records sorted, so lookups come back
-# pre-ranked; <category>.rules.json is the rule table indexed by rule id.
+# pre-ranked; <pool>.rules.json is the rule table indexed by rule id.
 # Bump on any incompatible layout change.
 FORMAT_VERSION = 1
 RECORD_FORMAT = ">BH"
@@ -56,36 +70,48 @@ def apply_rule(key: str, rule: tuple[int, str, bool]) -> str:
 
 
 class NameDicts:
-    """Compiled per-category uk->ru dictionaries (RecordDAWG + rule table).
+    """Compiled uk->ru dictionaries (RecordDAWG + rule tables).
 
-    The files are produced by the names_translator.dict_compiler module and
-    shipped in the optional names-translator-dicts-uk package. Everything is
-    loaded lazily on first lookup. When no dictionaries can be found, every
-    lookup returns [].
+    Three per-category pools (first/patronymic/last) plus a general legacy
+    pool used as a fallback. The files are produced by the
+    names_translator.dict_compiler module and bundled with the package.
+    Everything is loaded lazily on first lookup; a pool that cannot be
+    found simply yields no results.
 
     Dictionary location, first match wins:
     1. explicit ``path`` constructor argument
     2. the ``NAMES_TRANSLATOR_DICTS_PATH`` environment variable
-    3. the installed ``names_translator_dicts_uk`` package
+    3. the data bundled with the package
     """
 
     def __init__(self, path: Optional[str] = None) -> None:
         self._path = path
         self._loaded: dict = {}
+        self._as_dicts: dict = {}
 
     @cached_property
     def _base(self) -> Optional[str]:
         path = self._path or os.environ.get("NAMES_TRANSLATOR_DICTS_PATH")
-        if not path:
-            try:
-                import names_translator_dicts_uk
-
-                path = names_translator_dicts_uk.get_path()
-            except ImportError:
+        if path:
+            # A user-supplied location may legitimately be absent
+            if not os.path.isdir(path):
                 return None
-
-        if not os.path.isdir(path):
-            return None
+        else:
+            path = str(resources.files("names_translator") / "data")
+            missing = [
+                name
+                for pool in POOLS
+                for name in ("%s.dawg" % pool, "%s.rules.json" % pool)
+                if not os.path.exists(os.path.join(path, name))
+            ]
+            if missing:
+                # Unlike the above, missing bundled data is always a broken
+                # installation — fail loudly, not with identity translations
+                raise RuntimeError(
+                    "bundled dictionaries at %s are missing %s — broken or "
+                    "unsupported (zipped?) installation"
+                    % (path, ", ".join(missing))
+                )
 
         manifest_path = os.path.join(path, "manifest.json")
         if os.path.exists(manifest_path):
@@ -104,23 +130,23 @@ class NameDicts:
     def available(self) -> bool:
         return self._base is not None
 
-    def _get(self, category: str):
-        if category not in CATEGORIES:
+    def _get(self, pool: str):
+        if pool not in POOLS:
             raise ValueError(
-                "unknown category %r, expected one of %s" % (category, CATEGORIES)
+                "unknown pool %r, expected one of %s" % (pool, POOLS)
             )
 
-        if category not in self._loaded:
-            self._loaded[category] = self._load(category)
+        if pool not in self._loaded:
+            self._loaded[pool] = self._load(pool)
 
-        return self._loaded[category]
+        return self._loaded[pool]
 
-    def _load(self, category: str):
+    def _load(self, pool: str):
         if self._base is None:
             return None
 
-        dawg_path = os.path.join(self._base, category + ".dawg")
-        rules_path = os.path.join(self._base, category + ".rules.json")
+        dawg_path = os.path.join(self._base, pool + ".dawg")
+        rules_path = os.path.join(self._base, pool + ".rules.json")
         if not (os.path.exists(dawg_path) and os.path.exists(rules_path)):
             return None
 
@@ -139,6 +165,21 @@ class NameDicts:
 
         return d, rules
 
+    def _collect(self, key: str, pool: str, results: list[str]) -> None:
+        loaded = self._get(pool)
+        if loaded is None:
+            return
+
+        d, rules = loaded
+        records = d.get(key)
+        if records is None:
+            return
+
+        for _, rule_id in records:  # sorted by the leading rank
+            translation = apply_rule(key, rules[rule_id])
+            if translation not in results:
+                results.append(translation)
+
     def lookup(
         self,
         name: str,
@@ -156,22 +197,28 @@ class NameDicts:
     ) -> list[str]:
         """Same as lookup(), for a key that is already normalize_key-ed."""
         results: list[str] = []
-        for cat in (category,) if category else CATEGORIES:
-            loaded = self._get(cat)
-            if loaded is None:
-                continue
+        for pool in (category,) if category else CATEGORIES:
+            self._collect(key, pool, results)
 
-            d, rules = loaded
-            records = d.get(key)
-            if records is None:
-                continue
-
-            for _, rule_id in records:  # sorted by the leading rank
-                translation = apply_rule(key, rules[rule_id])
-                if translation not in results:
-                    results.append(translation)
+        if not results:
+            self._collect(key, LEGACY, results)
 
         return results[:limit]
+
+    def as_dict(self, pool: str) -> dict[str, list[str]]:
+        """The whole pool as {normalized name: ranked translations}."""
+        if pool not in self._as_dicts:
+            result: dict[str, list[str]] = {}
+            loaded = self._get(pool)
+            if loaded is not None:
+                d, rules = loaded
+                for key, (_, rule_id) in d.iteritems():  # per key, rank order
+                    result.setdefault(key, []).append(
+                        apply_rule(key, rules[rule_id])
+                    )
+            self._as_dicts[pool] = result
+
+        return self._as_dicts[pool]
 
 
 @cache

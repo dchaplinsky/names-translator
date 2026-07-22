@@ -60,6 +60,23 @@
       "dawg_sha256": "658d4b973e4be32ee3fe95cf411010985fb91152e9036bcd22fba2ca8d6f3b84",
       "rules_size": 391318,
       "rules_sha256": "37fdd491aef9b2d1174e78fcfde43eb3299c72213153518bac7249b1a8c9afb5"
+    },
+    "legacy": {
+      "sources": [
+        {
+          "file": "legacy_ua2ru.csv",
+          "sha256": "e3d423bfe2eabbc99407dea716302e1c96fa387c60f68f9c06607b34c890f85e"
+        }
+      ],
+      "rows_read": 19808,
+      "pairs_kept": 19764,
+      "unique_keys": 19409,
+      "rules": 4080,
+      "verbatim_rules": 321,
+      "dawg_size": 476168,
+      "dawg_sha256": "8fbf9ce90a73926b6b06db12c7d1ab52850281e786175e9f8a0102aeb59a3d98",
+      "rules_size": 115219,
+      "rules_sha256": "52f45487e8d4ad2d12a21ef45b263f5ae7c7c15c14c1d77d944b686f045e08c7"
     }
   }
 }

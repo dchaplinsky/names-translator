@@ -42,9 +42,10 @@ jobs:
       - name: Run tests
         run: pytest -v
 
-      - name: Dicts package integration (inter-package discovery seam)
-        if: ${{ hashFiles('dicts-dist/names_translator_dicts_uk/data/manifest.json') != '' }}
+      - name: Packaging boundary check (sdist -> wheel -> all pools present)
+        if: ${{ matrix.python-version == '3.13' }}
         run: |
-          pip install ./dicts-dist
-          python -c "from names_translator.dicts import NameDicts; d = NameDicts(); assert d.available; r = d.lookup('Дмитро', 'first'); assert r and r[0] == 'Дмитрий', r"
-          pip uninstall -y names-translator-dicts-uk
+          pip install build
+          python -m build
+          pip install --force-reinstall --no-deps dist/*.whl
+          python -I -c "from names_translator.dicts import POOLS, NameDicts; d = NameDicts(); assert all(d.as_dict(p) for p in POOLS), 'empty pool'; assert d.lookup('Дмитро', 'first')[0] == 'Дмитрий'"
